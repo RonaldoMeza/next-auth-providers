@@ -99,7 +99,3 @@ Abrir [http://localhost:3000](http://localhost:3000).
 ## Despliegue en Vercel
 
 Conectar el repositorio a Vercel y configurar las mismas variables de entorno del `.env.local` en el dashboard de Vercel (actualizar `NEXTAUTH_URL` a la URL de producción).
-
-## Licencia
-
-MIT
