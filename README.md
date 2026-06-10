@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NextAuth App
 
-## Getting Started
+Aplicación de autenticación con Next.js 16 y NextAuth.js v5. Soporta inicio de sesión con **Google**, **GitHub** y **credenciales** (email/contraseña) con cifrado bcrypt y bloqueo por intentos fallidos.
 
-First, run the development server:
+## Tecnologías
+
+- **Next.js 16** — App Router, Server Components, Turbopack
+- **NextAuth.js v5** — Autenticación multi-proveedor
+- **Tailwind CSS v4** — Estilos
+- **bcryptjs** — Cifrado de contraseñas
+- **TypeScript**
+
+## Características
+
+- Inicio de sesión con Google OAuth
+- Inicio de sesión con GitHub OAuth
+- Registro e inicio de sesión con credenciales (email y contraseña)
+- Contraseñas cifradas con bcrypt (10 rondas de sal)
+- Bloqueo automático tras 3 intentos fallidos (15 minutos)
+- Protección de rutas (`/dashboard`, `/profile`)
+- Perfil de usuario con imagen y datos de sesión
+
+## Requisitos
+
+- Node.js 18+
+- npm
+
+## Clonar y ejecutar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clonar el repositorio
+git clone https://github.com/RonaldoMeza/next-auth-providers.git
+cd next-auth-providers
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+# Copiar el archivo de ejemplo y completar los valores
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Editar `.env.local` con tus credenciales:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+GOOGLE_CLIENT_ID=tu_google_client_id
+GOOGLE_CLIENT_SECRET=tu_google_client_secret
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+GITHUB_CLIENT_ID=tu_github_client_id
+GITHUB_CLIENT_SECRET=tu_github_client_secret
 
-## Learn More
+NEXTAUTH_SECRET=una_clave_secreta_aleatoria
+NEXTAUTH_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Iniciar en modo desarrollo
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Obtener credenciales
 
-## Deploy on Vercel
+### Google
+1. Ir a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crear un proyecto → APIs & Services → Credentials
+3. Crear OAuth 2.0 Client ID (tipo: Web application)
+4. Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### GitHub
+1. Ir a **Settings** → **Developer settings** → **OAuth Apps** → **New OAuth App**
+2. Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+3. Copiar Client ID y generar un Client Secret
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Estructura del proyecto
+
+```
+├── app/
+│   ├── api/
+│   │   ├── auth/[...nextauth]/route.ts   # Ruta de NextAuth
+│   │   └── register/route.ts              # API de registro
+│   ├── dashboard/page.tsx                 # Dashboard protegido
+│   ├── profile/page.tsx                   # Perfil protegido
+│   ├── register/page.tsx                  # Formulario de registro
+│   ├── signIn/page.tsx                    # Página de inicio de sesión
+│   ├── layout.tsx                         # Layout principal con nav
+│   └── page.tsx                           # Redirección a /dashboard
+├── components/
+│   ├── LogoutButton.tsx                   # Botón de cerrar sesión
+│   └── SessionProvider.tsx                # Provider de sesión cliente
+├── lib/
+│   └── users.ts                           # Store en memoria, bcrypt, rate limiting
+├── auth.ts                                # Configuración de NextAuth
+├── proxy.ts                               # Middleware de protección
+└── next.config.ts                         # Configuración de Next.js
+```
+
+## Despliegue en Vercel
+
+Conectar el repositorio a Vercel y configurar las mismas variables de entorno del `.env.local` en el dashboard de Vercel (actualizar `NEXTAUTH_URL` a la URL de producción).
+
+## Licencia
+
+MIT
